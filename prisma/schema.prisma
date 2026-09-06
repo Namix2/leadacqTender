@@ -1,0 +1,86 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model AwardNotice {
+  id           String   @id @default(cuid())
+  buyerName    String
+  supplierName String
+  cpvCode      String
+  value        Decimal? @db.Decimal(14, 2)
+  awardDate    DateTime
+  sourceSystem String
+  rawNoticeId  String   @unique
+  createdAt    DateTime @default(now())
+
+  @@index([supplierName])
+  @@index([cpvCode])
+}
+
+model TargetCompany {
+  id                   String    @id @default(cuid())
+  companyName          String
+  companiesHouseNumber String?
+  turnoverBand         String?
+  sicCode              String?
+  bidCount12m          Int       @default(0)
+  winCount12m          Int       @default(0)
+  lastBidDate          DateTime?
+  lastBidBuyer         String?
+  lastBidOutcome       String?
+  priorityScore        Decimal?  @db.Decimal(5, 2)
+  notes                String?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+  contacts             Contact[]
+
+  @@index([priorityScore])
+}
+
+model Contact {
+  id              String               @id @default(cuid())
+  companyId       String
+  company         TargetCompany        @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  fullName        String
+  roleTitle       String
+  roleTier        String
+  linkedinUrl     String?
+  email           String?
+  phone           String?
+  source          String
+  verified        Boolean              @default(false)
+  callStatus      String               @default("not_contacted")
+  lastContactedAt DateTime?
+  notes           String?
+  createdAt       DateTime             @default(now())
+  callLogs        CallLog[]
+  intent          ExpressionOfIntent?
+
+  @@index([callStatus])
+  @@index([roleTier])
+}
+
+model CallLog {
+  id        String   @id @default(cuid())
+  contactId String
+  contact   Contact  @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  outcome   String
+  notes     String?
+  createdAt DateTime @default(now())
+}
+
+model ExpressionOfIntent {
+  id             String   @id @default(cuid())
+  contactId      String   @unique
+  contact        Contact  @relation(fields: [contactId], references: [id], onDelete: Cascade)
+  estimatedValue Decimal  @db.Decimal(10, 2)
+  currency       String   @default("GBP")
+  confirmedAt    DateTime?
+  notes          String?
+  createdAt      DateTime @default(now())
+}

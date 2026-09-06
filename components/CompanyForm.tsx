@@ -1,0 +1,4 @@
+"use client";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+export function CompanyForm() { const router = useRouter(); const [name, setName] = useState(""); const [working, setWorking] = useState(false); async function save(event: React.FormEvent) { event.preventDefault(); setWorking(true); const response = await fetch("/api/companies", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ companyName: name }) }); const company = await response.json(); if (response.ok) router.push(`/companies/${company.id}`); setWorking(false); } return <form onSubmit={save} className="card flex gap-2 p-3"><input required value={name} onChange={(event) => setName(event.target.value)} placeholder="Add a target company" /><button className="btn btn-primary shrink-0" disabled={working}>{working ? "Adding…" : "Add company"}</button></form>; }
