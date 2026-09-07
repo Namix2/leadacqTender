@@ -2,6 +2,8 @@ import Link from "next/link";
 import { db } from "@/lib/db";
 import { IngestButton } from "@/components/IngestButton";
 
+export const dynamic = "force-dynamic";
+
 const money = (value: unknown) => new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP", maximumFractionDigits: 0 }).format(Number(value || 0));
 export default async function DashboardPage() {
   const [intents, contacts, companies] = await Promise.all([db.expressionOfIntent.aggregate({ _sum: { estimatedValue: true }, where: { confirmedAt: { not: null } } }), db.contact.groupBy({ by: ["callStatus"], _count: { _all: true } }), db.targetCompany.findMany({ where: { contacts: { some: { callStatus: "not_contacted", verified: true } } }, orderBy: { priorityScore: "desc" }, take: 10 })]);

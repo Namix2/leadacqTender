@@ -1,2 +1,3 @@
 import { LoginForm } from "@/components/LoginForm";
+export const dynamic = "force-dynamic";
 export default function LoginPage() { return <div className="mx-auto mt-20 max-w-md"><div className="card p-8"><div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-600 text-xl font-bold text-white">T</div><p className="eyebrow mt-6">Private founder workspace</p><h1 className="mt-1 text-3xl font-bold tracking-tight">Tendr Lead Engine</h1><p className="mt-2 text-sm leading-6 text-slate-600">Your daily UK procurement signal and outreach workspace.</p><LoginForm /></div></div>; }
